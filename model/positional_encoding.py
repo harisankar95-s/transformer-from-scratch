@@ -13,6 +13,12 @@ class PositionalEncoding(nn.Module):
         self.column_pair = torch.arange(0,self.pair_length)
         self.two_i = (self.column_pair*2).float()
         self.div_term = torch.pow(10000, self.two_i / self.d_model)
+        self.positional_encoding[:, 0::2] = torch.sin(self.position / self.div_term)
+        self.positional_encoding[:, 1::2] = torch.cos(self.position / self.div_term)
+        self.register_buffer('pe', self.positional_encoding.unsqueeze(0))
+
+    def forward(self,x):
+        return x + self.pe[:, :x.size(1), :]
 
 
 
